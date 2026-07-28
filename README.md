@@ -183,7 +183,7 @@ Contributions are welcome! If you have ideas for new layers (Thermal, Weather, e
 
 ## 📖 Learn more
 
-- **[Full course — hackops-academy.github.io/astralosint](https://hackops-academy.github.io/astralosint/)**
+- **[Full course — hackops-academy.github.io/AstralOSINT](https://hackops-academy.github.io/AstralOSINT/)**
   — a 13-module walkthrough on operating AstralOSINT like a professional, from
   first launch through a complete tactical research methodology.
 
