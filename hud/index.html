@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AstraOSINT // GEOINT Console</title>
+<title>AstralOSINT // GEOINT Console</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="description" content="AstraOSINT — tactical geospatial intelligence console for OSINT research.">
+<meta name="description" content="AstralOSINT — tactical geospatial intelligence console for OSINT research.">
 
 <!-- Fonts: Rajdhani for display/HUD type, Share Tech Mono for data/mono readouts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,7 +37,7 @@
 <!-- Top status / HUD bar -->
 <header class="hud-bar">
     <div class="hud-brand">
-        <span class="brand-glyph">◈</span>
+        <img src="logo.svg" alt="AstralOSINT" class="brand-logo">
         <span class="brand-name">ASTRA<span class="accent">OSINT</span></span>
         <span class="brand-tag">GEOINT CONSOLE</span>
     </div>
@@ -79,6 +79,8 @@
         <button data-tab="layers" class="tab">Layers</button>
         <button data-tab="intel" class="tab">Intel<span id="intel-count" class="badge">0</span></button>
         <button data-tab="route" class="tab">Route</button>
+        <button data-tab="shadow" class="tab">Shadow</button>
+        <button data-tab="tools" class="tab">Tools</button>
     </nav>
 
     <div class="console-body">
@@ -129,6 +131,9 @@
                 <input type="checkbox" id="cluster-toggle" checked>
                 <span class="toggle-track"><span class="toggle-thumb"></span></span>
             </label>
+
+            <div class="panel-label spaced">Analysis Layers</div>
+            <div id="overlay-toggles"></div>
         </section>
 
         <!-- INTEL PANEL -->
@@ -193,6 +198,145 @@
             <div id="route-info" class="route-info"></div>
         </section>
 
+        <!-- SHADOW CALCULATOR PANEL -->
+        <section data-panel="shadow" class="panel">
+            <div class="panel-label">Location</div>
+            <div class="coord-grid">
+                <div>
+                    <label>Latitude</label>
+                    <input id="shadow-lat" placeholder="e.g. 40.1250">
+                </div>
+                <div>
+                    <label>Longitude</label>
+                    <input id="shadow-lng" placeholder="e.g. -105.2370">
+                </div>
+            </div>
+            <button id="shadow-use-target" class="btn ghost full" type="button">Use Current Target</button>
+
+            <div class="panel-label spaced">Mode</div>
+            <div class="shadow-mode-toggle">
+                <button type="button" class="shadow-mode-btn active" data-mode="check">Check Time</button>
+                <button type="button" class="shadow-mode-btn" data-mode="find">Find Matching Times</button>
+            </div>
+
+            <!-- CHECK TIME MODE -->
+            <div class="shadow-mode-panel active" data-mode="check">
+                <label>Date (UTC)</label>
+                <input type="date" id="shadow-date">
+                <label>Time (UTC)</label>
+                <input type="time" id="shadow-time" step="60">
+                <button id="shadow-check-btn" class="btn primary full" type="button">Calculate Sun Position</button>
+            </div>
+
+            <!-- FIND MATCHING TIMES MODE -->
+            <div class="shadow-mode-panel" data-mode="find">
+                <label>Date (UTC)</label>
+                <input type="date" id="shadow-find-date">
+
+                <div class="panel-label spaced">Observed Shadow</div>
+                <div class="coord-grid">
+                    <div>
+                        <label>Object height (m)</label>
+                        <input type="number" id="shadow-height" placeholder="e.g. 1.8" min="0" step="0.1">
+                    </div>
+                    <div>
+                        <label>Shadow length (m)</label>
+                        <input type="number" id="shadow-length" placeholder="e.g. 3.2" min="0" step="0.1">
+                    </div>
+                </div>
+                <div class="shadow-computed-row">
+                    <span>Computed sun elevation</span>
+                    <b id="shadow-computed-elevation">—</b>
+                </div>
+                <label>Or enter elevation angle directly (°)</label>
+                <input type="number" id="shadow-target-elevation" placeholder="e.g. 29.4" step="0.1">
+
+                <label>Shadow direction, optional (° from true north)</label>
+                <input type="number" id="shadow-azimuth-filter" placeholder="e.g. 60 = shadow points ENE" min="0" max="360" step="1">
+
+                <button id="shadow-find-btn" class="btn primary full" type="button">Find Matching Times</button>
+            </div>
+
+            <div id="shadow-results" class="shadow-results"></div>
+        </section>
+
+        <!-- ANALYST TOOLS PANEL -->
+        <section data-panel="tools" class="panel">
+            <div class="tools-mode-toggle">
+                <button type="button" class="tools-mode-btn active" data-mode="coords">Coordinates</button>
+                <button type="button" class="tools-mode-btn" data-mode="triangulate">Triangulate</button>
+                <button type="button" class="tools-mode-btn" data-mode="los">Line of Sight</button>
+            </div>
+
+            <!-- COORDINATE CONVERTER -->
+            <div class="tools-mode-panel active" data-mode="coords">
+                <div class="panel-label">From Decimal Degrees</div>
+                <div class="coord-grid">
+                    <div><label>Latitude</label><input id="cc-dec-lat" placeholder="e.g. 48.8584"></div>
+                    <div><label>Longitude</label><input id="cc-dec-lng" placeholder="e.g. 2.2945"></div>
+                </div>
+                <div class="btn-group">
+                    <button id="cc-dec-use-target" class="btn ghost" type="button">Use Target</button>
+                    <button id="cc-dec-convert" class="btn primary" type="button">Convert</button>
+                </div>
+
+                <div class="panel-label spaced">From MGRS</div>
+                <input id="cc-mgrs-input" placeholder="e.g. 31U DQ 48252 11954">
+                <button id="cc-mgrs-convert" class="btn primary full" type="button">Convert</button>
+
+                <div class="panel-label spaced">From UTM</div>
+                <div class="coord-grid">
+                    <div><label>Zone</label><input id="cc-utm-zone" type="number" placeholder="e.g. 31" min="1" max="60"></div>
+                    <div><label>Hemisphere</label>
+                        <select id="cc-utm-hemi"><option value="N">N</option><option value="S">S</option></select>
+                    </div>
+                </div>
+                <div class="coord-grid">
+                    <div><label>Easting</label><input id="cc-utm-easting" type="number" placeholder="e.g. 448252"></div>
+                    <div><label>Northing</label><input id="cc-utm-northing" type="number" placeholder="e.g. 5411954"></div>
+                </div>
+                <button id="cc-utm-convert" class="btn primary full" type="button">Convert</button>
+
+                <div class="panel-label spaced">Result</div>
+                <div id="cc-results" class="shadow-results"></div>
+            </div>
+
+            <!-- TRIANGULATION -->
+            <div class="tools-mode-panel" data-mode="triangulate">
+                <div class="panel-label">Observation Points</div>
+                <div id="tri-points"></div>
+                <button id="tri-add-point" class="btn ghost full" type="button">+ Add Observation Point</button>
+                <button id="tri-calc" class="btn primary full" type="button">Calculate Intersection</button>
+                <div id="tri-results" class="shadow-results"></div>
+            </div>
+
+            <!-- LINE OF SIGHT -->
+            <div class="tools-mode-panel" data-mode="los">
+                <div class="panel-label">Observer</div>
+                <div class="coord-grid">
+                    <div><label>Latitude</label><input id="los-obs-lat" placeholder="e.g. 40.1250"></div>
+                    <div><label>Longitude</label><input id="los-obs-lng" placeholder="e.g. -105.2370"></div>
+                </div>
+                <div class="coord-grid">
+                    <div><label>Height AGL (m)</label><input id="los-obs-height" type="number" value="1.7" step="0.1"></div>
+                    <div><label>&nbsp;</label><button id="los-obs-use-target" class="btn ghost full" type="button">Use Target</button></div>
+                </div>
+
+                <div class="panel-label spaced">Target</div>
+                <div class="coord-grid">
+                    <div><label>Latitude</label><input id="los-tgt-lat" placeholder="e.g. 40.1800"></div>
+                    <div><label>Longitude</label><input id="los-tgt-lng" placeholder="e.g. -105.1900"></div>
+                </div>
+                <div class="coord-grid">
+                    <div><label>Height AGL (m)</label><input id="los-tgt-height" type="number" value="0" step="0.1"></div>
+                    <div><label>&nbsp;</label><button id="los-tgt-use-target" class="btn ghost full" type="button">Use Target</button></div>
+                </div>
+
+                <button id="los-check-btn" class="btn primary full" type="button">Check Line of Sight</button>
+                <div id="los-results" class="shadow-results"></div>
+            </div>
+        </section>
+
     </div>
 </aside>
 
@@ -201,8 +345,20 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
 <script src="js/map.js"></script>
+<script src="js/layers/registry.js"></script>
+<script src="js/layers/terminator.js"></script>
+<script src="js/layers/heatmap.js"></script>
+<script src="js/tools/solar-position.js"></script>
+<script src="js/tools/sun-shadow.js"></script>
+<script src="js/tools/geo-math.js"></script>
+<script src="js/tools/coordinates.js"></script>
+<script src="js/tools/coord-converter-ui.js"></script>
+<script src="js/tools/triangulation.js"></script>
+<script src="js/tools/viewshed.js"></script>
+<script src="js/tools/tools-tab.js"></script>
 <script src="js/ui.js"></script>
 </body>
 </html>

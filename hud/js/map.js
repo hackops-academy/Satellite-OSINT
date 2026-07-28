@@ -1,5 +1,5 @@
 // =====================================================================
-// ASTRAOSINT — Core Map Engine
+// ASTRALOSINT — Core Map Engine
 // Handles: map init, tile layers, target markers, intel storage, routing
 // =====================================================================
 
@@ -28,15 +28,23 @@ try {
 }
 
 // ---------------------------------------------------------------- init map
+const WORLD_BOUNDS = L.latLngBounds([-90, -180], [90, 180]);
+
 map = L.map("map", {
     zoomControl: false,
     attributionControl: false,
+    minZoom: 3,                 // stops zooming out past a single world
+    maxBounds: WORLD_BOUNDS,    // can't pan into a repeated copy either
+    maxBoundsViscosity: 1.0,
+    worldCopyJump: false,
 }).setView([20.5937, 78.9629], 5);
 
-layers.street    = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 });
-layers.satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19 });
-layers.terrain   = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", { maxZoom: 17 });
-layers.dark      = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { maxZoom: 19 });
+const TILE_OPTS = { noWrap: true, bounds: WORLD_BOUNDS };
+
+layers.street    = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, ...TILE_OPTS });
+layers.satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 19, ...TILE_OPTS });
+layers.terrain   = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", { maxZoom: 17, ...TILE_OPTS });
+layers.dark      = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", { maxZoom: 19, ...TILE_OPTS });
 
 currentLayer = layers.dark.addTo(map);
 
@@ -79,9 +87,8 @@ map.on("click", async (e) => {
     placeTempMarker(lat, lng, "Resolving address…");
 
     try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-        const data = await res.json();
-        const addr = data.display_name || "Unknown location";
+        const data = await reverseGeocode(lat, lng);
+        const addr = (data && data.display_name) || "No address found for these coordinates";
         document.getElementById("address").value = addr;
         if (typeof onCoordDesignated === "function") onCoordDesignated(lat, lng, addr);
     } catch {
@@ -97,9 +104,27 @@ map.on("mousemove", (e) => {
     if (typeof updateCursorReadout === "function") updateCursorReadout(e.latlng.lat, e.latlng.lng);
 });
 
-// ---------------------------------------------------------------- search
+// ---------------------------------------------------------------- geocoding
+// Both helpers prefer the Electron main-process proxy (real User-Agent
+// header, satisfies Nominatim's usage policy) and fall back to a direct
+// browser fetch when running via run.sh with no Electron bridge present.
+async function reverseGeocode(lat, lon) {
+    if (window.astralBridge && window.astralBridge.isElectron) {
+        const result = await window.astralBridge.reverseGeocode(lat, lon);
+        if (!result.ok) throw new Error(result.error || "reverse geocode failed");
+        return result.data;
+    }
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+    return res.json();
+}
+
 async function performSearch(query) {
     if (!query) return [];
+    if (window.astralBridge && window.astralBridge.isElectron) {
+        const result = await window.astralBridge.searchPlaces(query);
+        if (!result.ok) throw new Error(result.error || "search failed");
+        return result.data;
+    }
     const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=6&q=${encodeURIComponent(query)}`);
     return res.json();
 }
@@ -160,16 +185,28 @@ function clearAllPoints() {
     clearRoute();
 }
 
-function exportPoints() {
-    const blob = new Blob([JSON.stringify(savedPoints, null, 2)], { type: "application/json" });
+async function exportPoints() {
+    const content = JSON.stringify(savedPoints, null, 2);
+    const defaultName = `astralosint-intel-${new Date().toISOString().slice(0,10)}.json`;
+
+    if (window.astralBridge && window.astralBridge.isElectron) {
+        const result = await window.astralBridge.saveJsonFile(defaultName, content);
+        if (result.canceled) return { ok: false, canceled: true };
+        if (!result.ok) return { ok: false, reason: result.error || "write-failed" };
+        return { ok: true, path: result.path };
+    }
+
+    // Browser fallback (e.g. run.sh + localhost, no Electron bridge present)
+    const blob = new Blob([content], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `astraosint-intel-${new Date().toISOString().slice(0,10)}.json`;
+    a.download = defaultName;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    return { ok: true };
 }
 
 function importPoints(jsonText) {
@@ -204,6 +241,7 @@ function importPoints(jsonText) {
 // ---------------------------------------------------------------- render list + markers + dropdowns
 function drawPoints() {
     activeMarkerLayer().clearLayers();
+    if (window.AstralLayers) AstralLayers.notifyPointsChanged(savedPoints);
 
     const list = document.getElementById("point-list");
     const startSel = document.getElementById("route-start");

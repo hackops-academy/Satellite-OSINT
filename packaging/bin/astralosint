@@ -1,0 +1,26 @@
+#!/bin/bash
+# astralosint - launcher for the AstralOSINT GEOINT console (HackOps Academy)
+#
+# Installed by packaging/install.sh. Launches the Electron HUD directly -
+# there's no local backend process to manage, AstralOSINT talks straight
+# to the public OSM/Nominatim/OSRM APIs from inside the app.
+set -uo pipefail
+
+ASTRALOSINT_HOME="${ASTRALOSINT_HOME:-$HOME/.local/share/astralosint}"
+
+if [ ! -d "$ASTRALOSINT_HOME/hud/node_modules" ]; then
+    echo "[astralosint] Not installed correctly - node_modules missing at $ASTRALOSINT_HOME/hud"
+    echo "[astralosint] Re-run the installer: ./packaging/install.sh"
+    exit 1
+fi
+
+cd "$ASTRALOSINT_HOME/hud" || exit 1
+
+if [ -x "./node_modules/.bin/electron" ]; then
+    exec ./node_modules/.bin/electron . "$@"
+elif command -v electron >/dev/null 2>&1; then
+    exec electron . "$@"
+else
+    echo "[astralosint] Electron not found in $ASTRALOSINT_HOME/hud/node_modules - reinstall AstralOSINT."
+    exit 1
+fi

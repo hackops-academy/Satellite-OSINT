@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <!-- Accent Gradient for Pin -->
+    <linearGradient id="primary-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+
+    <!-- Radar Sweep Gradient -->
+    <linearGradient id="radar-sweep" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0" />
+      <stop offset="100%" stop-color="#00f0ff" stop-opacity="0.4" />
+    </linearGradient>
+
+    <!-- Outer Glow Filter for Cyber Vibe -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Rounded Application Background -->
+  <rect x="0" y="0" width="512" height="512" rx="110" ry="110" fill="url(#bg-gradient)" />
+  
+  <!-- Subtle Inner Border -->
+  <rect x="8" y="8" width="496" height="496" rx="102" ry="102" fill="none" stroke="#1e293b" stroke-width="4" />
+
+  <g transform="translate(0, -10)">
+    <!-- Globe / Radar Grid -->
+    <circle cx="256" cy="220" r="140" stroke="#00f0ff" stroke-width="2" fill="none" opacity="0.25" />
+    <circle cx="256" cy="220" r="90" stroke="#00f0ff" stroke-width="1.5" fill="none" opacity="0.15" />
+    <circle cx="256" cy="220" r="40" stroke="#00f0ff" stroke-width="1" fill="none" opacity="0.1" />
+    
+    <!-- Latitude & Longitude Ellipses -->
+    <ellipse cx="256" cy="220" rx="140" ry="45" stroke="#00f0ff" stroke-width="1.5" fill="none" opacity="0.3" />
+    <ellipse cx="256" cy="220" rx="45" ry="140" stroke="#00f0ff" stroke-width="1.5" fill="none" opacity="0.3" />
+    
+    <!-- Radar Sweep Quarter -->
+    <path d="M256 220 L396 220 A140 140 0 0 0 256 80 Z" fill="url(#radar-sweep)" opacity="0.8" />
+    
+    <!-- Grid Lines -->
+    <line x1="116" y1="220" x2="396" y2="220" stroke="#00f0ff" stroke-width="1" opacity="0.4" />
+    <line x1="256" y1="80" x2="256" y2="360" stroke="#00f0ff" stroke-width="1" opacity="0.4" />
+
+    <!-- Geo-Location Pin -->
+    <path d="M256,80 C213.34,80 179,114.34 179,157 C179,193.72 239.5,266.07 250.75,281.26 C253.4,284.6 258.6,284.6 261.25,281.26 C272.5,266.07 333,193.72 333,157 C333,114.34 298.66,80 256,80 Z" 
+          fill="url(#primary-grad)" 
+          filter="url(#glow)" />
+
+    <!-- Inner Pin Shadow/Depth -->
+    <path d="M256,90 C221,90 192,118 192,154 C192,185 244,249 256,265 C268,249 320,185 320,154 C320,118 291,90 256,90 Z" 
+          fill="#020617" opacity="0.4" />
+
+    <!-- Astral Star (Inside the Pin) -->
+    <path d="M256,110 L262.5,148.5 L301,155 L262.5,161.5 L256,200 L249.5,161.5 L211,155 L249.5,148.5 Z" 
+          fill="#ffffff" 
+          filter="url(#glow)"/>
+    
+    <!-- Core Star Glow -->
+    <circle cx="256" cy="155" r="8" fill="#00f0ff" />
+  </g>
+
+  <!-- Typography -->
+  <g text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">
+    <!-- Main App Name -->
+    <text x="256" y="420" font-size="44" font-weight="800" letter-spacing="2" fill="#ffffff">
+      ASTRAL<tspan fill="#00f0ff">OSINT</tspan>
+    </text>
+    
+    <!-- Subtitle -->
+    <text x="256" y="455" font-size="15" font-weight="600" letter-spacing="5" fill="#64748b">
+      GLOBAL MAPS &amp; INTELLIGENCE
+    </text>
+  </g>
+</svg>

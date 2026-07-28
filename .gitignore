@@ -1,0 +1,8 @@
+# Electron / Node
+hud/node_modules/
+hud/dist/
+hud/package-lock.json
+
+# OS junk
+.DS_Store
+Thumbs.db

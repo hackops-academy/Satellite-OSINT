@@ -1,0 +1,14 @@
+{
+  "name": "astralosint-hud",
+  "version": "3.0.0",
+  "description": "Native GUI console for AstralOSINT - Tactical GEOINT console",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "HackOps Academy",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.0.0"
+  }
+}

@@ -1,5 +1,5 @@
 /* ===================================================================
-   ASTRAOSINT — Tactical GEOINT Console
+   ASTRALOSINT — Tactical GEOINT Console
    Design tokens
 =================================================================== */
 :root {
@@ -75,6 +75,14 @@ html, body {
 @keyframes pulse-ring {
     0%   { transform: scale(0.6); opacity: 0.8; }
     100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Sub-solar point marker (day/night terminator overlay) */
+.subsolar-marker {
+    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+    font-size: 15px; line-height: 1; color: #ffb703;
+    text-shadow: 0 0 8px rgba(255, 183, 3, 0.85), 0 0 2px rgba(0, 0, 0, 0.9);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
 }
 
 .leaflet-popup-content-wrapper {
@@ -162,7 +170,8 @@ path.leaflet-interactive {
     font-family: var(--font-display);
 }
 
-.hud-brand { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.hud-brand { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.brand-logo { width: 22px; height: 22px; filter: drop-shadow(0 0 6px var(--cyan-glow)); }
 .brand-glyph { color: var(--cyan); font-size: 1rem; text-shadow: 0 0 8px var(--cyan-glow); }
 .brand-name { font-weight: 700; font-size: 1.05rem; letter-spacing: 0.06em; color: var(--text); }
 .brand-name .accent { color: var(--cyan); }
@@ -381,6 +390,56 @@ kbd { background: var(--line-soft); border: 1px solid var(--line); border-radius
 /* coord card */
 .coord-card { background: var(--panel-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; margin-bottom: 4px; }
 .coord-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* shadow calculator */
+.shadow-mode-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.shadow-mode-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+    padding: 7px 6px; border-radius: var(--radius); font-size: 0.68rem; cursor: pointer;
+    font-family: var(--font-mono); transition: 0.15s var(--ease);
+}
+.shadow-mode-btn:hover { border-color: var(--cyan); color: var(--text); }
+.shadow-mode-btn.active { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+.shadow-mode-panel { display: none; }
+.shadow-mode-panel.active { display: block; }
+.shadow-computed-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.72rem; color: var(--text-dim); margin: 6px 0 10px;
+    padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius);
+}
+.shadow-computed-row b { color: var(--cyan); font-family: var(--font-mono); }
+.shadow-results { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.shadow-result-card {
+    background: var(--panel-raised); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 10px 12px; display: flex; flex-direction: column; gap: 4px;
+}
+.shadow-result-card.warn { border-color: var(--amber-dim); }
+.shadow-result-row { display: flex; justify-content: space-between; font-size: 0.72rem; }
+.shadow-result-row span { color: var(--text-dim); }
+.shadow-result-row b { color: var(--cyan); font-family: var(--font-mono); font-weight: 600; }
+.shadow-result-row.dim b { color: var(--text-dim); }
+.shadow-result-card.warn .shadow-result-row b { color: var(--amber); }
+
+/* analyst tools tab (coordinates / triangulate / line of sight) */
+.tools-mode-toggle { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.tools-mode-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+    padding: 7px 4px; border-radius: var(--radius); font-size: 0.62rem; cursor: pointer;
+    font-family: var(--font-mono); transition: 0.15s var(--ease);
+}
+.tools-mode-btn:hover { border-color: var(--cyan); color: var(--text); }
+.tools-mode-btn.active { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+.tools-mode-panel { display: none; }
+.tools-mode-panel.active { display: block; }
+
+.tri-point-row { border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 8px 10px 2px; margin-bottom: 8px; }
+
+.los-profile-wrap { margin-top: 4px; }
+.los-profile-svg { width: 100%; height: auto; display: block; background: var(--panel-raised); border: 1px solid var(--line); border-radius: var(--radius); }
+.los-profile-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.62rem; color: var(--text-dim); margin-top: 6px; }
+.los-profile-legend span { display: flex; align-items: center; gap: 4px; }
+.los-profile-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+.los-profile-legend .dim { margin-left: auto; }
 
 /* toggle switch */
 .toggle-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.76rem; color: var(--text-dim); cursor: pointer; }

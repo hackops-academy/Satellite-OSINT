@@ -3,522 +3,301 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AstraOSINT — Operate it like a professional</title>
-<meta name="description" content="A hands-on course for running the AstraOSINT tactical GEOINT console like a professional OSINT researcher.">
+<title>AstralOSINT Field Manual — HackOps Academy</title>
+<meta name="description" content="Full setup and usage course for AstralOSINT, the tactical GEOINT console from HackOps Academy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --void:#05080c;
-    --abyss:#0a0f16;
-    --panel:#0b1018;
-    --panel-2:#0d141d;
-    --card:#0c121a;
-    --line:#182430;
-    --line-soft:#101922;
-    --cyan:#00e5ff;
-    --cyan-dim:rgba(0,229,255,.14);
-    --cyan-glow:#8af5ff;
-    --blood:#ff2d55;
-    --amber:#ffb454;
-    --green:#39ff88;
-    --text:#d7dee6;
-    --text-dim:#7c8a99;
-    --text-faint:#46535f;
-    --display:'Rajdhani', 'Segoe UI', sans-serif;
-    --mono:'Share Tech Mono', 'JetBrains Mono', monospace;
-    --sans:'Rajdhani', -apple-system, sans-serif;
-    --sp-1:8px; --sp-2:16px; --sp-3:24px; --sp-4:32px; --sp-5:40px;
-    --sp-6:48px; --sp-7:64px; --sp-8:80px;
-    --content-w:760px;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:var(--void);
-    color:var(--text-dim);
-    font-family:var(--sans);
-    font-size:16.5px;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-  }
-  a{color:var(--cyan-glow);}
-  ::selection{background:var(--cyan-dim);color:#fff;}
-
-  .grid-bg{
-    position:fixed;inset:0;z-index:0;pointer-events:none;
-    background-image:
-      linear-gradient(var(--line-soft) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-    background-size:40px 40px;
-    opacity:.5;
-    mask-image:linear-gradient(to bottom, black, transparent 85%);
-  }
-
-  .ethics{
-    position:relative;z-index:2;
-    background:#0d141d;
-    border-bottom:1px solid var(--line);
-    color:var(--cyan-glow);
-    font-family:var(--mono);
-    font-size:12.5px;
-    padding:10px 24px;
-    text-align:center;
-  }
-  .ethics b{color:var(--cyan);}
-  .ethics span{color:var(--text);}
-
-  header.hero{
-    position:relative;z-index:1;
-    overflow:hidden;
-    padding:var(--sp-8) var(--sp-3) var(--sp-7);
-    border-bottom:1px solid var(--line);
-  }
-  .hero-inner{max-width:900px;margin:0 auto;position:relative;z-index:3;}
-  .term-chrome{
-    display:inline-flex;align-items:center;gap:var(--sp-1);
-    background:var(--panel);border:1px solid var(--line);
-    border-radius:4px;padding:6px 14px 6px 10px;margin:0 0 var(--sp-4);
-    font-family:var(--mono);font-size:12px;color:var(--text-dim);
-  }
-  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
-  .dot.g{background:var(--green);box-shadow:0 0 6px var(--green);}
-  h1.wordmark{
-    font-family:var(--display);font-weight:700;
-    font-size:clamp(42px,8vw,88px);
-    letter-spacing:1px;
-    margin:0 0 var(--sp-3);
-    color:var(--cyan);
-    text-shadow:0 0 40px rgba(0,229,255,.4);
-  }
-  .hero p.lede{
-    font-size:clamp(17px,2.2vw,21px);
-    color:var(--text);
-    max-width:640px;
-    margin:0 0 var(--sp-5);
-    font-weight:500;
-  }
-  .hero p.lede em{color:var(--cyan);font-style:normal;}
-  .cmd-line{
-    font-family:var(--mono);font-size:14.5px;
-    background:var(--panel);border:1px solid var(--line);
-    border-radius:4px;padding:var(--sp-2) 20px;max-width:640px;
-    color:var(--cyan-glow);overflow-x:auto;white-space:nowrap;
-  }
-  .cmd-line .p{color:var(--cyan);}
-  .cmd-line .c{color:var(--text-dim);}
-  .cursor{display:inline-block;width:8px;height:16px;background:var(--cyan);vertical-align:middle;animation:blink 1.1s steps(1) infinite;margin-left:2px;}
-  @keyframes blink{50%{opacity:0;}}
-
-  .hero-badges{display:flex;flex-wrap:wrap;gap:var(--sp-1) 10px;margin-top:var(--sp-5);}
-  .badge{
-    font-family:var(--mono);font-size:12px;color:var(--cyan);
-    border:1px solid var(--line);background:var(--panel);
-    padding:7px 12px;border-radius:20px;
-  }
-
-  .layout{
-    position:relative;z-index:1;
-    display:grid;
-    grid-template-columns:280px minmax(0,1fr);
-    max-width:1280px;margin:0 auto;
-  }
-  nav.toc{
-    position:sticky;top:0;align-self:start;
-    height:100vh;overflow-y:auto;
-    padding:48px 20px 48px 24px;
-    border-right:1px solid var(--line);
-  }
-  nav.toc::-webkit-scrollbar{width:6px;}
-  nav.toc::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px;}
-  .toc-track{position:relative;padding-left:18px;}
-  .toc-crack{position:absolute;left:0;top:4px;bottom:4px;width:2px;background:var(--line-soft);}
-  .toc-crack::after{
-    content:"";position:absolute;left:0;top:0;width:100%;
-    height:var(--progress,0%);
-    background:linear-gradient(var(--cyan-glow), var(--cyan));
-    box-shadow:0 0 8px var(--cyan);
-    transition:height .15s linear;
-  }
-  .toc-item{
-    display:block;position:relative;
-    font-family:var(--mono);font-size:12.5px;
-    color:var(--text-dim);text-decoration:none;
-    padding:9px 0 9px 16px;
-    transition:color .15s;
-  }
-  .toc-item .n{color:var(--text-faint);margin-right:8px;}
-  .toc-item:hover{color:var(--cyan-glow);}
-  .toc-item.active{color:var(--cyan);}
-  .toc-item.active .n{color:var(--cyan);}
-  .toc-item::before{
-    content:"";position:absolute;left:-19px;top:18px;width:6px;height:6px;
-    border-radius:50%;background:var(--line);
-  }
-  .toc-item.active::before{background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
-
-  main{padding:0 0 var(--sp-8);min-width:0;}
-  .module{
-    padding:var(--sp-7) clamp(24px,4vw,64px) var(--sp-7);
-    border-bottom:1px solid var(--line-soft);
-    scroll-margin-top:20px;
-  }
-  .module.m0{padding-top:var(--sp-6);}
-
-  .module > * { margin-top:var(--sp-3); }
-  .module > *:first-child { margin-top:0; }
-  .module > *:last-child { margin-bottom:0 !important; }
-
-  .module-eyebrow{
-    font-family:var(--mono);font-size:12.5px;color:var(--cyan);
-    display:flex;align-items:center;gap:var(--sp-2);
-  }
-  .module-eyebrow .num{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:30px;height:30px;border:1px solid var(--line);border-radius:4px;
-    color:var(--cyan);font-weight:700;
-  }
-  .module h2{
-    font-family:var(--display);font-weight:700;font-size:clamp(26px,3.2vw,36px);
-    color:var(--text);margin-top:var(--sp-2) !important;letter-spacing:.3px;
-  }
-  .module .goal{color:var(--text-faint);font-size:15px;max-width:var(--content-w);margin-top:var(--sp-1) !important;font-family:var(--mono);}
-  .module .goal + *{margin-top:var(--sp-5) !important;}
-  .module p{max-width:var(--content-w);font-size:16px;color:var(--text-dim);}
-  .module ul, .module ol{max-width:var(--content-w);padding-left:20px;font-size:16px;color:var(--text-dim);}
-  .module li{margin-bottom:var(--sp-1);}
-  .module h3{
-    font-family:var(--mono);font-size:15px;color:var(--cyan-glow);
-    margin-top:var(--sp-5) !important;
-  }
-  .module h3 + *{margin-top:var(--sp-2) !important;}
-
-  pre{
-    background:var(--card);border:1px solid var(--line);
-    border-radius:4px;padding:var(--sp-2) 18px;overflow-x:auto;
-    font-family:var(--mono);font-size:13.5px;line-height:1.6;
-    color:var(--cyan-glow);max-width:var(--content-w);position:relative;
-  }
-  pre .cm{color:var(--text-faint);}
-  pre .kw{color:var(--cyan);}
-  pre .str{color:var(--green);}
-  code.inline{
-    font-family:var(--mono);background:var(--card);border:1px solid var(--line);
-    padding:2px 6px;border-radius:3px;font-size:13.5px;color:var(--cyan-glow);
-  }
-
-  .tip{
-    max-width:var(--content-w);padding:var(--sp-2) 18px;
-    border-left:3px solid var(--cyan);
-    background:var(--panel);border-radius:0 4px 4px 0;
-    font-size:15px;
-  }
-  .tip b{color:var(--cyan);font-family:var(--mono);font-size:12px;letter-spacing:.5px;display:block;margin-bottom:var(--sp-1);}
-
-  .warn{
-    max-width:var(--content-w);padding:var(--sp-2) 18px;
-    border-left:3px solid var(--blood);
-    background:#150a0d;border-radius:0 4px 4px 0;font-size:15px;
-  }
-  .warn b{color:var(--blood);font-family:var(--mono);font-size:12px;letter-spacing:.5px;display:block;margin-bottom:var(--sp-1);}
-
-  table{border-collapse:collapse;max-width:var(--content-w);width:100%;font-size:14px;}
-  th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;}
-  th{background:var(--panel);color:var(--cyan-glow);font-family:var(--mono);font-weight:600;font-size:12px;}
-  td{color:var(--text-dim);}
-  td code.inline, th code.inline{font-size:12.5px;}
-
-  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-1);max-width:var(--content-w);font-family:var(--mono);font-size:12.5px;}
-  .flow .box{background:var(--card);border:1px solid var(--line);color:var(--cyan-glow);padding:8px 12px;border-radius:4px;}
-  .flow .arrow{color:var(--text-faint);}
-
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);max-width:var(--content-w);}
-  @media (max-width:640px){.grid-2{grid-template-columns:1fr;}}
-  .kv{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:var(--sp-2);}
-  .kv .k{font-family:var(--mono);font-size:11px;color:var(--text-faint);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;}
-  .kv .v{color:var(--text);font-size:14.5px;}
-
-  .tagchip{display:inline-block;padding:2px 9px;border-radius:3px;font-family:var(--mono);font-size:11px;font-weight:600;border:1px solid;}
-  .tagchip.wifi{color:var(--cyan);border-color:var(--cyan);background:var(--cyan-dim);}
-  .tagchip.cctv{color:var(--blood);border-color:var(--blood);background:rgba(255,45,85,.12);}
-  .tagchip.entry{color:var(--amber);border-color:var(--amber);background:rgba(255,180,84,.12);}
-  .tagchip.vehicle{color:var(--green);border-color:var(--green);background:rgba(57,255,136,.12);}
-  .tagchip.person{color:var(--text);border-color:var(--line);background:var(--panel);}
-
-  footer{
-    position:relative;z-index:1;
-    border-top:1px solid var(--line);
-    padding:40px 24px;text-align:center;
-    font-family:var(--mono);font-size:12px;color:var(--text-faint);
-  }
-  footer a{color:var(--cyan);}
-
-  @media (max-width:900px){
-    .layout{grid-template-columns:1fr;}
-    nav.toc{
-      position:sticky;top:0;height:auto;max-height:60px;overflow:hidden;
-      display:flex;overflow-x:auto;padding:12px 16px;
-      border-right:none;border-bottom:1px solid var(--line);
-      background:var(--void);z-index:20;
-      transition:max-height .2s ease;
-    }
-    nav.toc.open{max-height:70vh;overflow-y:auto;flex-direction:column;}
-    .toc-track{padding-left:0;display:flex;gap:4px;flex-wrap:nowrap;}
-    nav.toc.open .toc-track{flex-direction:column;}
-    .toc-crack{display:none;}
-    .toc-item{white-space:nowrap;border:1px solid var(--line);border-radius:16px;padding:6px 12px;}
-    .toc-item::before{display:none;}
-    nav.toc.open .toc-item{white-space:normal;border-radius:4px;}
-  }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="grid-bg"></div>
 
-<div class="ethics">
-  <b>RESEARCH USE —</b> <span>AstraOSINT is for OSINT research and education. Always respect privacy laws and the map data providers' Terms of Service.</span>
+<button class="toc-toggle" id="toc-toggle" aria-label="Toggle navigation">☰</button>
+
+<div class="shell">
+
+    <!-- =============================================== TABLE OF CONTENTS -->
+    <aside class="toc" id="toc">
+        <div class="toc-brand">
+            <img src="../assets/astralosint-logo.svg" alt="">
+            <div class="toc-brand-text">
+                <div class="name">ASTRALOSINT</div>
+                <div class="org">HackOps Academy // Field Manual</div>
+            </div>
+        </div>
+
+        <div class="toc-classification">
+            TRAINING USE ONLY — LAWFUL OSINT RESEARCH<br>
+            "stay legal, stay anonymous"
+        </div>
+
+        <nav>
+            <div class="toc-group-label">Getting Started</div>
+            <a class="toc-link" href="#read-this-first"><span class="num">§0</span>Read This First</a>
+            <a class="toc-link" href="#install"><span class="num">§1</span>Installation &amp; Setup</a>
+            <a class="toc-link" href="#interface"><span class="num">§2</span>Interface Orientation</a>
+
+            <div class="toc-group-label">Core Console</div>
+            <a class="toc-link" href="#search"><span class="num">§3</span>Search &amp; Positioning</a>
+            <a class="toc-link" href="#layers"><span class="num">§4</span>Layers</a>
+            <a class="toc-link" href="#intel"><span class="num">§5</span>Intel Log</a>
+            <a class="toc-link" href="#routing"><span class="num">§6</span>Tactical Routing</a>
+
+            <div class="toc-group-label">Geolocation Tradecraft</div>
+            <a class="toc-link" href="#shadow"><span class="num">§7</span>Shadow Calculator</a>
+            <a class="toc-link" href="#tools"><span class="num">§8</span>Analyst Tools</a>
+            <a class="toc-link" href="#workflow"><span class="num">§9</span>Worked Example</a>
+
+            <div class="toc-group-label">Reference</div>
+            <a class="toc-link" href="#reference"><span class="num">§10</span>Field Reference</a>
+        </nav>
+
+        <div class="toc-footer">
+            AstralOSINT v4.0 · <a href="https://github.com/hackops-academy" target="_blank" rel="noopener">github.com/hackops-academy</a>
+        </div>
+    </aside>
+
+    <!-- =============================================== MAIN -->
+    <main>
+
+        <header class="cover">
+            <div class="cover-eyebrow"><span class="dot"></span>Field Manual — Document Status: Current</div>
+            <h1>AstralOSINT <span>Field Manual</span></h1>
+            <p class="sub">A complete course on installing, configuring, and operating the AstralOSINT tactical GEOINT console — from first launch through advanced geolocation tradecraft.</p>
+            <div class="cover-meta">
+                <span>VERSION <b>4.0</b></span>
+                <span>PUBLISHER <b>HackOps Academy</b></span>
+                <span>PLATFORM <b>Electron Desktop / Browser Fallback</b></span>
+                <span>AUDIENCE <b>OSINT Trainees</b></span>
+            </div>
+            <div class="cover-shot">
+                <img src="../screenshots/console-mission-view.png" alt="AstralOSINT mission console showing the map view and sidebar navigation">
+            </div>
+        </header>
+
+        <div class="motto-strip">Brand directive: <b>stay legal, stay anonymous.</b> Every module in this manual assumes lawful, consent-respecting research — see §0 before you start collecting.</div>
+
+        <div class="content">
+
+            <!-- ============================================= §0 -->
+            <section class="module" id="read-this-first">
+                <div class="module-eyebrow">§0</div>
+                <h2>Read This First</h2>
+                <p>AstralOSINT is a mapping and analysis console for open-source intelligence (OSINT) research — the practice of gathering and analyzing information that is already publicly available. It's built for training, journalism, humanitarian mapping, and security research use cases.</p>
+
+                <div class="callout legal">
+                    <b>Ground rules.</b> Only investigate targets you have a lawful basis to research. Don't use this tool to track, surveil, or locate private individuals without consent. Respect the terms of service of any data source you pull from. When in doubt, don't collect.
+                </div>
+
+                <p>Everything in this manual maps directly to a real tab or button in the console — there's nothing here that isn't in the app. Screenshots are kept to the essentials; most controls are shown as small inline reproductions of the actual UI so you can recognize them at a glance.</p>
+            </section>
+
+            <!-- ============================================= §1 -->
+            <section class="module" id="install">
+                <div class="module-eyebrow">§1</div>
+                <h2>Installation &amp; Setup</h2>
+                <p>AstralOSINT runs two ways: as a proper Electron desktop app (recommended), or as a zero-install browser fallback. Both ship in the same repository.</p>
+
+                <h3>1.1 Requirements <span class="tag">before you start</span></h3>
+                <ul>
+                    <li><b>Desktop app:</b> Node.js + npm (the setup script installs these automatically on Debian/Ubuntu/Kali, Termux, macOS with Homebrew, or Arch — otherwise install Node manually first).</li>
+                    <li><b>Browser fallback:</b> Python 3 only, nothing else.</li>
+                    <li>An internet connection — map tiles, geocoding, routing, and the Line of Sight tool's elevation lookups are all pulled live.</li>
+                </ul>
+
+                <h3>1.2 Quick Start (Desktop App)</h3>
+                <p>From inside the extracted or cloned <code>AstralOSINT</code> folder:</p>
+                <pre><code>./setup.sh   # one-time: installs Node deps + Electron
+./start.sh   # launches the desktop console</code></pre>
+                <p><code>setup.sh</code> checks for Node/npm, installs them if missing, then runs <code>npm install</code> inside <code>hud/</code>. <code>start.sh</code> just confirms that install happened and runs <code>npm start</code>.</p>
+
+                <h3>1.3 Browser Fallback <span class="tag">no Node required</span></h3>
+                <p>Prefer not to install Electron? Run:</p>
+                <pre><code>./run.sh</code></pre>
+                <p>This opens a small menu — option 1 starts a local Python server on <code>localhost:8080</code> and opens it in your default browser. It's the same interface, just without the native desktop shell (no OS-level save dialogs, no system tray).</p>
+
+                <h3>1.4 Installing as a Desktop Menu App <span class="tag">Kali / Debian-based</span></h3>
+                <p>To get AstralOSINT in your applications menu with its own launcher command:</p>
+                <pre><code>./packaging/install.sh</code></pre>
+                <p>This installs per-user (no root needed for the app itself) to:</p>
+                <table>
+                    <tr><th>Location</th><th>Contents</th></tr>
+                    <tr><td><code>~/.local/share/astralosint</code></td><td>App files + Electron dependencies</td></tr>
+                    <tr><td><code>~/.local/bin/astralosint</code></td><td>Terminal launcher command</td></tr>
+                    <tr><td><code>~/.local/share/applications/</code></td><td>Applications-menu entry</td></tr>
+                    <tr><td><code>~/.local/share/icons/hicolor/</code></td><td>App icon</td></tr>
+                </table>
+                <div class="callout warn"><b>Note.</b> If <code>~/.local/bin</code> isn't already on your <code>PATH</code>, the installer tells you exactly what line to add to <code>~/.bashrc</code> or <code>~/.zshrc</code>.</div>
+
+                <p>To remove everything the installer created:</p>
+                <pre><code>./packaging/uninstall.sh</code></pre>
+                <div class="callout warn"><b>Back up first.</b> Your saved intel log lives inside the app's local storage under the install directory — uninstalling removes it too. Export your intel log (§5.2) before uninstalling if you want to keep it.</div>
+            </section>
+
+            <!-- ============================================= §2 -->
+            <section class="module" id="interface">
+                <div class="module-eyebrow">§2</div>
+                <h2>Interface Orientation</h2>
+
+                <h3>2.1 The Console</h3>
+                <p>The whole app is one full-screen map with a collapsible sidebar console. Click the menu icon (☰) top-left to open or close it. Inside, six tabs cover every function:</p>
+                <div class="ui-tab-strip">
+                    <div class="ui-tab active">Search</div><div class="ui-tab">Layers</div><div class="ui-tab">Intel</div>
+                    <div class="ui-tab">Route</div><div class="ui-tab">Shadow</div><div class="ui-tab">Tools</div>
+                </div>
+                <p>The HUD strip along the top-right of the map shows the live UTC clock, your cursor's coordinates, current zoom level, and a connection status indicator.</p>
+
+                <h3>2.2 Designating a Target</h3>
+                <p>Almost everything in AstralOSINT revolves around one concept: the <b>currently designated target</b> — a single lat/lng pair the whole console reads from and writes to. You designate one by:</p>
+                <ul>
+                    <li>Clicking anywhere on the map (this also reverse-geocodes the address automatically), or</li>
+                    <li>Running a search and selecting a result (§3), or</li>
+                    <li>Using <b>Locate My Position</b> on the Search tab.</li>
+                </ul>
+                <p>Once designated, the target's coordinates populate the Latitude/Longitude/Address fields on the Intel tab — and any tool with a <b>Use Current Target</b> or <b>Use Target</b> button (Shadow, Coordinates, Triangulate, Line of Sight) can pull those same coordinates in with one click, so you're never retyping a location between tools.</p>
+
+                <h3>2.3 Keyboard Shortcuts</h3>
+                <table>
+                    <tr><th>Shortcut</th><th>Action</th></tr>
+                    <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd> <span style="color:var(--text-faint)">(or</span> <kbd>⌘</kbd> + <kbd>K</kbd><span style="color:var(--text-faint)">)</span></td><td>Open the console and jump straight to Search</td></tr>
+                    <tr><td><kbd>Esc</kbd></td><td>Close the console</td></tr>
+                </table>
+            </section>
+
+            <!-- ============================================= §3 -->
+            <section class="module" id="search">
+                <div class="module-eyebrow">§3</div>
+                <h2>Search &amp; Positioning</h2>
+                <p>The Search tab is the front door: a global place/address search, plus a <b>Locate My Position</b> button that centers the map on your own device location. Search results, once selected, both jump the map and designate a target — ready to tag or hand off to any other tool.</p>
+                <div class="callout"><b>Tip.</b> <kbd>Ctrl</kbd>+<kbd>K</kbd> from anywhere in the app opens the console straight into Search with the input already focused.</div>
+            </section>
+
+            <!-- ============================================= §4 -->
+            <section class="module" id="layers">
+                <div class="module-eyebrow">§4</div>
+                <h2>Layers</h2>
+                <p>The Layers tab controls what's drawn on top of the base map: imagery style, marker clustering, and two live analysis overlays.</p>
+
+                <h3>4.1 Imagery &amp; Clustering</h3>
+                <p>Switch between Street, Satellite, Terrain, and Tactical base map styles. <b>Marker clustering</b> groups nearby saved targets into a single expandable cluster once you zoom out — turn it off if you'd rather see every pin individually, even overlapping.</p>
+
+                <h3>4.2 Day / Night Terminator <span class="tag">Analysis Layers</span></h3>
+                <p>Shades the current night hemisphere on the map and drops a marker at the <b>sub-solar point</b> — the exact spot on Earth directly under the sun right now. It refreshes every 60 seconds. This is the same geometry behind shadow-based photo geolocation (§7) — useful for building intuition about where the sun is before you start solving for a specific time.</p>
+
+                <h3>4.3 Target Density Heatmap <span class="tag">Analysis Layers</span></h3>
+                <p>Renders your saved Intel log (§5) as a heatmap instead of individual pins, so dense clusters of targets are visible at a glance. It updates live — save, delete, or import targets while it's on and the heatmap redraws automatically.</p>
+                <div class="ui-ref">
+                    <span class="ui-chip">🌗 Day / Night Terminator</span>
+                    <span class="ui-chip">🔥 Target Density Heatmap</span>
+                </div>
+            </section>
+
+            <!-- ============================================= §5 -->
+            <section class="module" id="intel">
+                <div class="module-eyebrow">§5</div>
+                <h2>Intel Log</h2>
+                <p>This is your running case file — every target you've saved, each with a name, tag, and optional note.</p>
+
+                <h3>5.1 Tagging &amp; Saving</h3>
+                <p>With a target designated (§2.2), give it a name, pick a tag, and save. Tags are visual shorthand for what a pin represents:</p>
+                <div class="ui-ref">
+                    <span class="ui-chip active">📍 Custom</span>
+                    <span class="ui-chip">📶 WiFi</span>
+                    <span class="ui-chip">🎥 CCTV</span>
+                    <span class="ui-chip">🚪 Entry</span>
+                    <span class="ui-chip">🚗 Vehicle</span>
+                    <span class="ui-chip">👤 Person</span>
+                </div>
+                <p>Saved targets appear as markers on the map (grouped by the clustering setting in §4.1) and in a scrollable list in the Intel tab, with the running count shown in the tab's badge.</p>
+
+                <h3>5.2 Export &amp; Import</h3>
+                <p>Export writes your whole Intel log to a JSON file — in the desktop app, a native save dialog; in the browser fallback, a normal file download. Import reads one of those files back in, merging it into your current log.</p>
+                <div class="callout"><b>Use this to back up your case file</b> before uninstalling (§1.4), or to hand a case off to another analyst running their own copy of AstralOSINT.</div>
+            </section>
+
+            <!-- ============================================= §6 -->
+            <section class="module" id="routing">
+                <div class="module-eyebrow">§6</div>
+                <h2>Tactical Routing</h2>
+                <p>Pick any two saved targets as a start and end point, and the Route tab plots a path between them with distance and duration. Useful for planning ground movement between points of interest, or just understanding how two locations in your case relate spatially. <b>Clear</b> removes the current route without touching your saved targets.</p>
+            </section>
+
+            <!-- ============================================= §7 -->
+            <section class="module" id="shadow">
+                <div class="module-eyebrow">§7</div>
+                <h2>Shadow Calculator</h2>
+                <p>This is where AstralOSINT moves from mapping into <b>photo geolocation tradecraft</b>. Every object under the sun casts a shadow whose length and direction depend entirely on where you are on Earth and what time it is — which means a shadow in a photo is a clue you can work backward from.</p>
+
+                <h3>7.1 Check Time</h3>
+                <p>Enter a candidate location and a UTC date/time, and it tells you exactly where the sun is: elevation above the horizon, compass azimuth, and which way a shadow would point. Use this to sanity-check a hypothesis — "if this photo was taken here at this time, would the shadows look like this?"</p>
+
+                <h3>7.2 Find Matching Times</h3>
+                <p>The reverse — and more powerful — direction. Measure an object's height and its shadow's length in the photo (a fence post, a doorframe, a person of known height), enter those, pick a candidate location and date, and it scans the entire day to find the UTC time(s) that would produce that exact shadow. Add the shadow's compass direction to narrow a two-answer result (morning vs. afternoon) down to one.</p>
+                <div class="callout warn"><b>Known limitation.</b> The calculator assumes flat ground and a perfectly vertical object. Real-world photos rarely have either perfectly — treat results as a strong estimate, not a certainty, and always look for a second corroborating clue.</div>
+            </section>
+
+            <!-- ============================================= §8 -->
+            <section class="module" id="tools">
+                <div class="module-eyebrow">§8</div>
+                <h2>Analyst Tools</h2>
+                <p>Three focused calculators live under the Tools tab, switchable with the toggle at the top of the panel:</p>
+                <div class="ui-tab-strip">
+                    <div class="ui-tab active">Coordinates</div><div class="ui-tab">Triangulate</div><div class="ui-tab">Line of Sight</div>
+                </div>
+
+                <h3>8.1 Coordinate Converter</h3>
+                <p>Converts freely between the four ways a location gets written: <b>Decimal degrees</b>, <b>DMS</b> (degrees/minutes/seconds), <b>UTM</b>, and <b>MGRS</b> — the grid reference format NATO and most military/government mapping systems use (e.g. <code>31U DQ 48252 11954</code>). Enter a coordinate in any one format and get all four back, with a one-click <b>Jump to Map</b>.</p>
+
+                <h3>8.2 Triangulation</h3>
+                <p>Classic cross-bearing resection: if you have two or more vantage points and a compass bearing toward the same target from each (from multiple photos/videos of the same object, or direction-finding), this plots where those bearing lines intersect. Add a third or more points for a best-fit estimate with a reported error margin instead of a single exact crossing.</p>
+
+                <h3>8.3 Line of Sight</h3>
+                <p>Checks whether an observer and a target point can actually see each other — pulling real elevation data along the path and accounting for the Earth's curvature and standard atmospheric refraction, not just a flat assumption. Enter both points' height above ground (eye height, building height, mast height), and it returns a clear <b>CLEAR</b> / <b>OBSTRUCTED</b> verdict plus a visual elevation profile.</p>
+                <div class="callout"><b>Needs a network connection</b> — it pulls terrain elevation from the free Open-Elevation API. If that service is unreachable, you'll get a clear error rather than a silently wrong answer.</div>
+            </section>
+
+            <!-- ============================================= §9 -->
+            <section class="module" id="workflow">
+                <div class="module-eyebrow">§9</div>
+                <h2>Worked Example: Geolocating a Photo</h2>
+                <p>A short case study showing how the tools in §7 and §8 combine in an actual investigation — verifying where and when a photo was taken, using only what's visible in the frame.</p>
+                <ol class="workflow-steps">
+                    <li><b>Narrow the region.</b> Use visible clues in the photo — signage, architecture, vegetation, license plates, terrain — to identify a shortlist of candidate locations. Search each one (§3) to see it on the map.</li>
+                    <li><b>Measure the shadow.</b> Find a vertical object with a known or estimable height in the photo (a lamppost, a doorway, a person) and measure its shadow length relative to it, even roughly.</li>
+                    <li><b>Run Find Matching Times</b> (§7.2) for your top candidate location and a plausible date range. Add the shadow's compass direction if you can estimate it from the photo (e.g. from a compass app, or known street orientation) to narrow morning vs. afternoon.</li>
+                    <li><b>Cross-check with Line of Sight</b> (§8.3) if the photo shows a distant landmark — confirm that landmark would actually be visible from your candidate point given the terrain between them.</li>
+                    <li><b>If you have a second photo or witness bearing</b> to the same subject from a different angle, run Triangulation (§8.2) to cross-check your candidate point independently.</li>
+                    <li><b>Convert and record.</b> Once confident, use the Coordinate Converter (§8.1) to get the location in whatever format your report needs, then save it to the Intel log (§5.1) with your supporting notes.</li>
+                </ol>
+                <div class="callout"><b>The point of combining tools</b> is corroboration — one method narrowing a hypothesis, another independently confirming it. A single shadow calculation is a lead, not a conclusion.</div>
+            </section>
+
+            <!-- ============================================= §10 -->
+            <section class="module" id="reference">
+                <div class="module-eyebrow">§10</div>
+                <h2>Field Reference</h2>
+                <table>
+                    <tr><th>Tab</th><th>What it's for</th></tr>
+                    <tr><td>Search</td><td>Find a place, or locate yourself</td></tr>
+                    <tr><td>Layers</td><td>Base map style, clustering, terminator, heatmap</td></tr>
+                    <tr><td>Intel</td><td>Your saved target log — tag, note, export, import</td></tr>
+                    <tr><td>Route</td><td>Plot a path between two saved targets</td></tr>
+                    <tr><td>Shadow</td><td>Sun position &amp; photo-shadow geolocation</td></tr>
+                    <tr><td>Tools</td><td>Coordinate conversion, triangulation, line of sight</td></tr>
+                </table>
+                <p>Full setup commands, gathered in one place:</p>
+                <pre><code>./setup.sh              # one-time dependency install
+./start.sh              # launch desktop app
+./run.sh                # browser fallback, no install needed
+./packaging/install.sh  # install to applications menu
+./packaging/uninstall.sh</code></pre>
+                <div class="callout legal"><b>Last word.</b> Stay legal, stay anonymous. This manual and the tool it documents are for lawful research and training — not for stalking, harassment, or unauthorized surveillance of any person.</div>
+                <a class="back-to-top" href="#read-this-first">↑ Back to top</a>
+            </section>
+
+        </div>
+    </main>
 </div>
 
-<header class="hero">
-  <div class="hero-inner">
-    <div class="term-chrome"><span class="dot g"></span>&nbsp;LINK ESTABLISHED — professional-track</div>
-    <h1 class="wordmark">ASTRAOSINT</h1>
-    <p class="lede">A hands-on course for running AstraOSINT the way <em>a working OSINT researcher</em> would — mapping, target intel, tagging, routing, and export, tied into one repeatable tactical workflow.</p>
-    <div class="cmd-line"><span class="p">&gt;</span> ./run.sh <span class="c">— option 1) Start Local Server</span><span class="cursor"></span></div>
-    <div class="hero-badges">
-      <span class="badge">13 modules</span>
-      <span class="badge">fully client-side, no accounts</span>
-      <span class="badge">Ctrl/Cmd+K to search</span>
-      <span class="badge">by HackOps Academy</span>
-    </div>
-  </div>
-</header>
-
-<div class="layout">
-  <nav class="toc" id="toc">
-    <div class="toc-track">
-      <div class="toc-crack" id="crack"></div>
-      <a class="toc-item" data-target="m0"><span class="n">00</span>Welcome &amp; disclaimer</a>
-      <a class="toc-item" data-target="m1"><span class="n">01</span>Launching the console</a>
-      <a class="toc-item" data-target="m2"><span class="n">02</span>The tactical HUD</a>
-      <a class="toc-item" data-target="m3"><span class="n">03</span>Map layers</a>
-      <a class="toc-item" data-target="m4"><span class="n">04</span>Designating targets</a>
-      <a class="toc-item" data-target="m5"><span class="n">05</span>Tagging &amp; notes</a>
-      <a class="toc-item" data-target="m6"><span class="n">06</span>Search</a>
-      <a class="toc-item" data-target="m7"><span class="n">07</span>Tactical routing</a>
-      <a class="toc-item" data-target="m8"><span class="n">08</span>Export &amp; import</a>
-      <a class="toc-item" data-target="m9"><span class="n">09</span>Clustering &amp; dense sets</a>
-      <a class="toc-item" data-target="m10"><span class="n">10</span>Tech stack &amp; limits</a>
-      <a class="toc-item" data-target="m11"><span class="n">11</span>The full methodology</a>
-      <a class="toc-item" data-target="m12"><span class="n">12</span>Practice &amp; next steps</a>
-    </div>
-  </nav>
-
-  <main>
-
-    <section class="module m0" id="m0">
-      <div class="module-eyebrow"><span class="num">00</span>WELCOME</div>
-      <h2>What this course is</h2>
-      <p class="goal">Get oriented before you designate your first target.</p>
-      <p>AstraOSINT is a professional-grade, web-based GEOINT console — a single tactical interface for satellite imagery analysis, target tracking, and route planning, fully client-side with no backend and no accounts. This course doesn't re-explain every button — the README already does that. It teaches the <em style="color:var(--cyan);font-style:normal">workflow</em> a professional researcher follows so a mission console actually turns into a usable intel log.</p>
-      <div class="warn">
-        <b>RESEARCH USE, RESPECT THE LAW</b>
-        AstraOSINT is intended for Open Source Intelligence research and educational purposes. Always respect privacy laws and the Terms of Service of the underlying map data providers (OpenStreetMap, Nominatim, OSRM).
-      </div>
-      <div class="tip"><b>WHO THIS IS FOR</b>Someone who has already run <code class="inline">./run.sh</code> once and seen the console load, and now wants a repeatable process for a real research pass instead of clicking around.</div>
-    </section>
-
-    <section class="module" id="m1">
-      <div class="module-eyebrow"><span class="num">01</span>MODULE 01</div>
-      <h2>Launching the console</h2>
-      <p class="goal">One script, one local server, zero accounts.</p>
-      <pre><span class="kw">git</span> clone https://github.com/hackops-academy/AstraOSINT.git
-<span class="kw">cd</span> AstraOSINT
-<span class="kw">chmod</span> +x run.sh
-./run.sh   <span class="cm"># choose 1) Start Local Server</span></pre>
-      <p>The launcher starts a Python HTTP server on port 8080 and opens <code class="inline">http://localhost:8080</code> automatically. Because everything runs client-side and only talks to public OSM/OSRM APIs, there's no account setup and no data leaves your machine except standard map/geocoding requests.</p>
-      <div class="tip"><b>PRO HABIT</b>Bookmark <code class="inline">http://localhost:8080</code> once, then get in the habit of relaunching <code class="inline">run.sh</code> at the start of every research session rather than leaving a stale tab open across days — a fresh load means a fresh HUD state.</div>
-    </section>
-
-    <section class="module" id="m2">
-      <div class="module-eyebrow"><span class="num">02</span>MODULE 02</div>
-      <h2>The tactical HUD</h2>
-      <p class="goal">Know what the status bar is telling you at a glance.</p>
-      <p>The top status bar runs live the whole session: UTC clock, cursor lat/lng, zoom level, and connection status. The Mission Console below it is tabbed — Search, Layers, Intel, Route — instead of one long scrolling menu.</p>
-      <div class="grid-2">
-        <div class="kv"><div class="k">Jump to search</div><div class="v"><code class="inline">Ctrl/Cmd + K</code></div></div>
-        <div class="kv"><div class="k">Close console</div><div class="v"><code class="inline">Esc</code></div></div>
-      </div>
-      <p>Feedback comes through toast notifications, not blocking <code class="inline">alert()</code> popups — so you can keep working while a save or export confirms in the corner. The ambient scanline/vignette/radar-sweep overlay respects <code class="inline">prefers-reduced-motion</code> if that matters for your setup.</p>
-    </section>
-
-    <section class="module" id="m3">
-      <div class="module-eyebrow"><span class="num">03</span>MODULE 03</div>
-      <h2>Map layers</h2>
-      <p class="goal">Pick the layer that answers the question you're actually asking.</p>
-      <table>
-        <tr><th>Layer</th><th>Best for</th></tr>
-        <tr><td>Street</td><td>Orienting to addresses and named landmarks</td></tr>
-        <tr><td>Satellite</td><td>Visual confirmation of structures, vehicles, terrain features</td></tr>
-        <tr><td>Terrain</td><td>Elevation, natural cover, approach routes</td></tr>
-        <tr><td>Tactical (dark)</td><td>Long working sessions, low-glare console feel</td></tr>
-      </table>
-      <div class="tip"><b>PRO HABIT</b>Switch to Satellite specifically to confirm a target before you tag it — Street layer address matches don't always mean what you think they mean once you see the actual structure.</div>
-    </section>
-
-    <section class="module" id="m4">
-      <div class="module-eyebrow"><span class="num">04</span>MODULE 04</div>
-      <h2>Designating targets</h2>
-      <p class="goal">Every intel entry starts with one click.</p>
-      <p>Click anywhere on the map to designate a target — AstraOSINT reverse-geocodes it instantly into a real-world address in the Intel tab. From there:</p>
-      <ol>
-        <li>Name the target.</li>
-        <li>Pick a tag (see Module 05).</li>
-        <li>Hit <b style="color:var(--text);">Save Target</b> — it's logged to both the map and the sidebar list.</li>
-      </ol>
-      <p>The bottom-left coordinate readout is persistent and has one-click copy-to-clipboard — use it when you need to hand a raw lat/lng to another tool without leaving the console.</p>
-      <div class="tip"><b>PRO HABIT</b>If you're on-site, use the locate-me (device geolocation) option to designate your own position first — it gives every subsequent target a reliable reference point in your intel log.</div>
-    </section>
-
-    <section class="module" id="m5">
-      <div class="module-eyebrow"><span class="num">05</span>MODULE 05</div>
-      <h2>Tagging &amp; notes</h2>
-      <p class="goal">A log of pins isn't intel — a tagged, annotated log is.</p>
-      <p>
-        <span class="tagchip wifi">WIFI</span>
-        <span class="tagchip cctv">CCTV</span>
-        <span class="tagchip entry">ENTRY</span>
-        <span class="tagchip vehicle">VEHICLE</span>
-        <span class="tagchip person">PERSON</span>
-        <span class="tagchip person">CUSTOM</span>
-      </p>
-      <p>Each tag gets its own icon on the map and in the list, so a dense area is scannable at a glance instead of a wall of identical pins. Every target also takes a free-text note, and can be deleted with one click if it turns out to be wrong.</p>
-      <div class="tip"><b>PRO HABIT</b>Write the note at the moment you tag the target, not later — "why this matters" is obvious in the field and much harder to reconstruct from a bare pin a week into the research.</div>
-    </section>
-
-    <section class="module" id="m6">
-      <div class="module-eyebrow"><span class="num">06</span>MODULE 06</div>
-      <h2>Search</h2>
-      <p class="goal">Get to the right place fast, without losing context.</p>
-      <p>Global place/address search returns a real result list — not just a jump to the first match — so you can confirm you've picked the right location among several similarly-named ones before committing.</p>
-      <div class="tip"><b>PRO HABIT</b><code class="inline">Ctrl/Cmd + K</code> jumps into search from anywhere in the console, so you never have to hunt for the tab mid-session — build the muscle memory early.</div>
-    </section>
-
-    <section class="module" id="m7">
-      <div class="module-eyebrow"><span class="num">07</span>MODULE 07</div>
-      <h2>Tactical routing</h2>
-      <p class="goal">Understand how two targets actually connect.</p>
-      <p>Plot a road route between any two logged targets with live distance/time estimates. When road data isn't available for a segment, AstraOSINT automatically falls back to a dashed line-of-sight indicator instead of failing silently.</p>
-      <div class="tip"><b>PRO HABIT</b>A dashed line-of-sight route is itself a finding — it usually means the two points aren't connected by mapped road infrastructure, which can be as relevant to a physical-security assessment as the route distance itself.</div>
-    </section>
-
-    <section class="module" id="m8">
-      <div class="module-eyebrow"><span class="num">08</span>MODULE 08</div>
-      <h2>Export &amp; import</h2>
-      <p class="goal">Your intel log outlives the browser tab.</p>
-      <p>Export the full intel log as JSON for backup or to hand off to another machine or teammate; import it back the same way to resume exactly where you left off.</p>
-      <div class="tip"><b>PRO HABIT</b>Export at the end of every session, not just at the end of the engagement — a browser refresh or crash shouldn't be able to cost you a day's worth of tagged targets.</div>
-    </section>
-
-    <section class="module" id="m9">
-      <div class="module-eyebrow"><span class="num">09</span>MODULE 09</div>
-      <h2>Clustering &amp; dense target sets</h2>
-      <p class="goal">Keep a crowded map readable.</p>
-      <p>The marker clustering toggle groups nearby targets into a single expandable cluster marker once a set gets dense — turn it on for a wide-area survey with dozens of pins, and off again when you need to work precisely at street level.</p>
-      <div class="tip"><b>PRO HABIT</b>Leave clustering off while actively tagging in one small area (easier to click exactly the pin you mean), then switch it on afterward to review the whole log at a wider zoom.</div>
-    </section>
-
-    <section class="module" id="m10">
-      <div class="module-eyebrow"><span class="num">10</span>MODULE 10</div>
-      <h2>Tech stack &amp; limits</h2>
-      <p class="goal">Know what you're actually depending on.</p>
-      <table>
-        <tr><th>Component</th><th>Technology</th></tr>
-        <tr><td>Mapping engine</td><td>Leaflet.js</td></tr>
-        <tr><td>Clustering</td><td>Leaflet.markercluster</td></tr>
-        <tr><td>Routing</td><td>Leaflet Routing Machine + OSRM</td></tr>
-        <tr><td>Geocoding / search</td><td>OpenStreetMap Nominatim</td></tr>
-      </table>
-      <p>No frameworks, no build step, no tracking — but also no offline mode: routing and search depend on the public OSM/OSRM APIs being reachable, and are subject to those services' own rate limits and Terms of Service.</p>
-      <div class="warn"><b>RESPECT THE UPSTREAM SERVICES</b>Nominatim and OSRM are shared public infrastructure. Avoid scripting rapid repeated queries against them — bursty automated use can get your IP rate-limited or blocked, affecting every session after.</div>
-    </section>
-
-    <section class="module" id="m11">
-      <div class="module-eyebrow"><span class="num">11</span>MODULE 11</div>
-      <h2>The full methodology</h2>
-      <p class="goal">How the modules above chain into one research session.</p>
-      <div class="flow" style="flex-direction:column;align-items:flex-start;">
-        <div class="box">1 — Launch via <code class="inline" style="background:transparent;border:none;">./run.sh</code>, confirm LINK ESTABLISHED</div>
-        <div class="box">2 — Search to the area of interest; confirm on Satellite layer</div>
-        <div class="box">3 — Designate targets by click; reverse-geocode confirms the address</div>
-        <div class="box">4 — Tag each target immediately, note context while it's fresh</div>
-        <div class="box">5 — Switch to Tactical (dark) for long-session comfort</div>
-        <div class="box">6 — Route between key targets; note any line-of-sight fallbacks</div>
-        <div class="box">7 — Toggle clustering on to review the full log at a wide zoom</div>
-        <div class="box">8 — Export the intel log as JSON before closing the session</div>
-      </div>
-      <div class="tip"><b>WHAT SEPARATES A PROFESSIONAL RUN FROM A DEFAULT RUN</b>Not the layer choice — tagging and noting every target the moment it's placed, and exporting before the session ends instead of trusting the browser to hold onto it.</div>
-    </section>
-
-    <section class="module" id="m12">
-      <div class="module-eyebrow"><span class="num">12</span>MODULE 12</div>
-      <h2>Practice &amp; next steps</h2>
-      <p class="goal">Rehearse the workflow somewhere low-stakes.</p>
-      <ol>
-        <li>Pick any public, well-known landmark area and designate five targets around it using all five default tags at least once each.</li>
-        <li>Route between two of them and deliberately pick a pair likely to hit a line-of-sight fallback (e.g. across water or restricted land) to see that behavior firsthand.</li>
-        <li>Export the log, clear your browser data, then import it back and confirm everything restored correctly.</li>
-      </ol>
-      <div class="tip"><b>NEXT</b>Once the tag → note → route → export loop feels automatic, bring AstraOSINT into a real research session alongside your other OSINT tooling.</div>
-    </section>
-
-  </main>
-</div>
-
-<footer>
-  ASTRAOSINT — built by HackOps Academy · MIT License · <a href="https://github.com/hackops-academy/AstraOSINT">View on GitHub</a>
-</footer>
-
-<script>
-(function(){
-  var items = Array.prototype.slice.call(document.querySelectorAll('.toc-item'));
-  var sections = items.map(function(i){ return document.getElementById(i.dataset.target); });
-  var crack = document.getElementById('crack');
-
-  items.forEach(function(item){
-    item.addEventListener('click', function(e){
-      e.preventDefault();
-      var target = document.getElementById(item.dataset.target);
-      if(target){ target.scrollIntoView({behavior:'smooth', block:'start'}); }
-      var toc = document.getElementById('toc');
-      toc.classList.remove('open');
-    });
-  });
-
-  function onScroll(){
-    var y = window.scrollY + 120;
-    var activeIdx = 0;
-    for(var i=0;i<sections.length;i++){
-      if(sections[i] && sections[i].offsetTop <= y){ activeIdx = i; }
-    }
-    items.forEach(function(it,idx){ it.classList.toggle('active', idx===activeIdx); });
-
-    var doc = document.documentElement;
-    var pct = (window.scrollY) / (doc.scrollHeight - window.innerHeight) * 100;
-    crack.style.setProperty('--progress', Math.min(100, Math.max(0,pct)) + '%');
-  }
-  document.addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
-
-  var toc = document.getElementById('toc');
-  if(window.matchMedia('(max-width:900px)').matches){
-    toc.addEventListener('click', function(e){
-      if(e.target === toc){ toc.classList.toggle('open'); }
-    });
-  }
-})();
-</script>
+<script src="script.js"></script>
 </body>
 </html>

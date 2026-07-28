@@ -1,5 +1,5 @@
 // =====================================================================
-// ASTRAOSINT — Interface Layer
+// ASTRALOSINT — Interface Layer
 // Handles: console open/close, tabs, HUD clock/cursor, toasts,
 // search UI, tag selection, geolocation, clipboard, import/export, shortcuts
 // =====================================================================
@@ -161,6 +161,27 @@ document.getElementById("cluster-toggle").addEventListener("change", (e) => {
     setClustering(e.target.checked);
 });
 
+// ---------------------------------------------------------------- overlay plugin toggles
+// Renders one toggle row per plugin registered via AstralLayers.register()
+// (see js/layers/registry.js) — new overlays never need an HTML edit.
+if (window.AstralLayers) {
+    const overlayContainer = document.getElementById("overlay-toggles");
+    AstralLayers.all().forEach(plugin => {
+        const row = document.createElement("label");
+        row.className = "toggle-row";
+        row.innerHTML = `
+            <span>${plugin.icon ? plugin.icon + " " : ""}${escapeHtml(plugin.label)}</span>
+            <input type="checkbox" id="overlay-${plugin.id}">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        `;
+        row.querySelector("input").addEventListener("change", (e) => {
+            AstralLayers.toggle(plugin.id, e.target.checked, map);
+            toast(`${plugin.label}: ${e.target.checked ? "on" : "off"}`, "info");
+        });
+        overlayContainer.appendChild(row);
+    });
+}
+
 // ---------------------------------------------------------------- tag chips
 let selectedTag = "Custom";
 document.querySelectorAll(".tag-chip").forEach(chip => {
@@ -194,14 +215,31 @@ document.getElementById("clear-points-btn").addEventListener("click", () => {
 });
 
 // ---------------------------------------------------------------- export / import
-document.getElementById("export-btn").addEventListener("click", () => {
+document.getElementById("export-btn").addEventListener("click", async () => {
     if (!savedPoints.length) { toast("Nothing to export yet.", "warn"); return; }
-    exportPoints();
-    toast("Intel exported as JSON.", "success");
+    const result = await exportPoints();
+    if (result.canceled) return;
+    if (!result.ok) { toast("Export failed.", "error"); return; }
+    toast(result.path ? `Intel exported to ${result.path}` : "Intel exported as JSON.", "success");
 });
 
 const importFileInput = document.getElementById("import-file");
-document.getElementById("import-btn").addEventListener("click", () => importFileInput.click());
+document.getElementById("import-btn").addEventListener("click", async () => {
+    if (window.astralBridge && window.astralBridge.isElectron) {
+        const result = await window.astralBridge.openJsonFile();
+        if (result.canceled) return;
+        if (!result.ok) { toast("Import failed to read file.", "error"); return; }
+        const outcome = importPoints(result.content);
+        if (!outcome.ok) {
+            toast("Import failed — invalid JSON file.", "error");
+        } else {
+            toast(`Imported ${outcome.added} target(s).`, "success");
+        }
+        return;
+    }
+    // Browser fallback (e.g. run.sh + localhost, no Electron bridge present)
+    importFileInput.click();
+});
 importFileInput.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;

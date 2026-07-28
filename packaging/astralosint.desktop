@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=AstralOSINT
+Comment=Tactical GEOINT console for OSINT research
+Exec=__LAUNCHER__
+Icon=astralosint
+Terminal=false
+Categories=Security;Utility;
+StartupWMClass=AstralOSINT
