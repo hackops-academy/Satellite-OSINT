@@ -1,8 +1,4 @@
 <p align="center">
-  <img src="assets/astralosint-logo.svg" alt="AstralOSINT" width="140">
-</p>
-
-<p align="center">
   <img src="assets/astralosint_banner.png" alt="AstralOSINT — Tactical GEOINT Console, made by HackOps Academy" width="100%">
 </p>
 
@@ -25,6 +21,10 @@ Developed by **HackOps Academy**.
 routing, export/import, and a full tactical research methodology.
 
 ---
+
+<p align="center">
+  <img src="assets/astralosint-logo.svg" alt="AstralOSINT" width="140">
+</p>
 
 ## ⚡ What's new in v3.0 (Desktop Edition)
 
