@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/astralosint_banner_v2.png" alt="AstralOSINT — Tactical GEOINT Console, made by HackOps Academy" width="100%">
+  <img src="assets/astralosint_banner.png" alt="AstralOSINT — Tactical GEOINT Console, made by HackOps Academy" width="100%">
 </p>
 
 # 🛰️ AstralOSINT | Tactical GEOINT Console
